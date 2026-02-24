@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: vehicle-telemetry-aggregator
+
+  # ── MongoDB ──────────────────────────────────────────────────────────────
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/vehicle_telemetry
+      database: vehicle_telemetry
+
+  # ── Kafka (Confluent Cloud) ──────────────────────────────────────────────
+  kafka:
+    bootstrap-servers: pkc-l7pr2.ap-south-1.aws.confluent.cloud:9092
+    properties:
+      # SASL/SSL authentication for Confluent Cloud
+      security.protocol: SASL_SSL
+      sasl.mechanism: PLAIN
+      sasl.jaas.config: >-
+        org.apache.kafka.common.security.plain.PlainLoginModule required
+        username="5AANK45OYLX2URUY"
+        password="cfltvT3GETtzTD4c0XxqVZGaBd2kIMh7QJci+ODMY+r8j6e1OzU+SWuctNAlfgjg";
+
+# ── Application-specific ─────────────────────────────────────────────────
+app:
+  kafka:
+    input-topic: telemetry-periodic
+    state-store-name: vehicle-state-store
+    application-id: vehicle-telemetry-aggregator
+  mongodb:
+    collection: vehicle_last_connected_status          # aggregated state (one doc per did)
+    history-collection: telemetry_history  # raw signal history (every signal)
+
+# ── Logging ──────────────────────────────────────────────────────────────
+logging:
+  level:
+    com.telemetry: INFO
+    org.apache.kafka.streams: INFO
+    org.springframework.data.mongodb: INFO
